@@ -1,9 +1,3 @@
-/* TODO (missing)
-    - cors
-    - bad request - validation to fields
-    - improvement: remove duplicate try catch with async wrapper
-*/
-
 // BASE SETUP
 // =============================================================================
 
@@ -85,8 +79,6 @@ router.delete('/employee/:employeeId', async function(req, res, next) {
         next(e)
     }
 })
-
-// more routes for our API will happen here
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api

@@ -4,8 +4,7 @@ class EmployeeRepo {
 
     async getEmployees() {
         // date was parsed wrong by javascript as a datetime.
-        // https://stackoverflow.com/questions/37191084/postgresql-returns-incorrect-date-format
-        const result = await dbPool.query('SELECT *, date_of_birth::varchar FROM employee')
+        const result = await dbPool.query('SELECT *, date_of_birth::varchar FROM employee ORDER BY id ASC')
         return result.rows
     }
 
