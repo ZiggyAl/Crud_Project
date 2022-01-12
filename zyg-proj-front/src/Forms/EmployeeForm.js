@@ -12,30 +12,30 @@ import DateAdapter from '@mui/lab/AdapterMoment';
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
+import { LoadingButton } from "@mui/lab";
+
 
 const EmployeeForm = ()=>{
     const { id } = useParams();
     const initialFormState = {firstName: '', lastName: '', isActive: false, dateOfBirth: null }
     const [employee, setEmployee] = useState(initialFormState)
     const navigate = useNavigate();
-    //const [change, setChange] = useState(false)
-
+    const [loading, setLoading] = useState(false)
+    
     useEffect(() => {
         const getEmployee = async () => {
           const {data} = await axios(`http://localhost:8080/api/employee/${id}`)
           // Update state
-          //setUser({user:[data.employee],loading: false})
           setEmployee({
               firstName: data.employee.first_name,
               lastName: data.employee.last_name,
               isActive: data.employee.is_active,
-              dateOfBirth: data.employee.date_of_birth
+              dateOfBirth: moment(data.employee.date_of_birth).format("YYYY-MM-DD")
           }) 
         }
     
         if(id) getEmployee()
     }, [])
-    console.log(employee)
     const enableButton = employee.firstName && employee.lastName && employee.dateOfBirth;
 
     const handleChange = (event)=>{
@@ -48,10 +48,9 @@ const EmployeeForm = ()=>{
         else{
             setEmployee({
                 ...employee,
-                dateOfBirth: event
+                dateOfBirth: event.format("YYYY-MM-DD")
             })
         }
-        //setChange(employee.firstName && employee.lastName && employee.dateOfBirth)
     }
 
 
@@ -64,7 +63,9 @@ const EmployeeForm = ()=>{
     }
 
 
-    return(
+    return loading ? (
+        <div>loading..</div>
+    ):(
         <div>
             <TextField 
                 required
@@ -96,7 +97,7 @@ const EmployeeForm = ()=>{
             <LocalizationProvider dateAdapter ={DateAdapter}>
                 <DatePicker
                     label= "DateTime picker"
-                    value={employee.dateOfBirth}//? employee.dateOfBirth : "1993-02-16"}
+                    value={employee.dateOfBirth}
                     onChange={handleChange}
                     maxDate={moment()}
                     inputFormat={"DD-MM-YYYY"}
@@ -104,14 +105,17 @@ const EmployeeForm = ()=>{
                     renderInput={(params) => <TextField {...params} />}
                 />
             </LocalizationProvider>
-            <Button variant = "contained" 
+            <LoadingButton 
+                    variant = "contained" 
                     size = "large" 
                     disabled = {!enableButton}
+                    loading = {loading}
                     onClick={async (event) =>{
+                        setLoading(true)
                         id? await submitPut() : await submitPost();
                         navigate('/employees');
                     }} 
-            >{id ? 'UPDATE' : 'ADD EMPLOYEE'}</Button>
+            >{id ? 'UPDATE' : 'ADD EMPLOYEE'}</LoadingButton>
         </div>
     )
 }
